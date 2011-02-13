@@ -1,0 +1,1 @@
+ALTER TABLE `bwsbilling`.`customer` ADD COLUMN `use_alt_address` VARCHAR(1) AFTER `billing_start_month_id`;

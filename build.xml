@@ -1,0 +1,148 @@
+
+<!-- This file is an ANT build script. ANT is a Java based build tool. -->
+<!-- It is availale from http://jakarta.apache.org/ant/                -->
+
+
+<!-- ================================================================= -->
+<!-- NOTE: all directories are relative to jakarta-log4j/              -->
+<!-- the parent of build/                                              -->
+<!-- ================================================================= -->
+<project name="bwsBillingSystem" default="build" basedir="." >
+
+  
+  <!-- The build.properties file defines the parth to local jar files -->
+  <property file="build.properties"/>               
+
+  <!-- Read the system environment variables and stores them in properties, -->
+  <!-- prefixed with "env". -->
+  <property environment="env"/>
+
+  <!-- The directory where source files are stored. -->
+  <property name="src.java.dir" value="${basedir}/src/java/"/>
+  <property name="src.conf.dir" value="${basedir}/src/conf"/>
+  <property  name="prop.dir" value="${basedir}/properties" />
+  <property name="src.winbat.dir" value="${basedir}/src/winbat"/>
+  <property name="test.java.dir" value="${basedir}/test/java/"/>
+  <property name="test.conf.dir" value="${basedir}/test/conf"/>
+  <property name="lib.dir" value="${basedir}/lib" />
+  <property name="junit.reports.dir" value="${basedir}/junit-reports"/>
+  <property name="ver" value="v2-1-7" />
+
+  <!-- Destination for compiled files -->
+  <property name="src.classes.dir" value="classes.src"/>
+  <property name="test.classes.dir" value="classes.test"/>
+
+  <!-- Destination for generated jar files -->
+  <property name="jar.dest" value="dist/jar"/>
+
+  <!-- The jar file that the jar task will generate -->
+  <property name="jar.filename" value="bwsBilling.jar"/>
+
+  <!-- Construct compile classpath -->
+  <path id="compile.classpath">
+  	<fileset dir="${lib.dir}">
+  		<include name="*.jar"/>
+  	</fileset>
+  </path>
+
+  <path id="test.compile.classpath">
+  	<fileset dir="${lib.dir}">
+  		<include name="*.jar"/>
+  	</fileset>
+  	<pathelement location="${src.classes.dir}"/>
+  	<pathelement location="${test.classes.dir}"/>
+  </path>
+
+  <!-- ================================================================= -->
+  <!-- Initialize variables                                              -->
+  <!-- NOTE: all directories are relative to jakarta-log4j/              -->
+  <!-- ================================================================= -->
+  <target name="init">
+    <tstamp />
+  	<mkdir dir="${test.classes.dir}"/>
+  	<mkdir dir="${src.classes.dir}"/>
+  	<mkdir dir="${jar.dest}"/>
+  	<mkdir dir="${junit.reports.dir}"/>
+  	<mkdir dir="${deploy.dir}"/>
+  	<mkdir dir="${deploy.dir}/lib"/>
+  	<mkdir dir="${deploy.dir}/cfg"/>
+  	<mkdir dir="${deploy.dir}/log"/>
+  </target>
+
+  <target name="build" depends="clean, init, build.core, jar"/>
+	
+  <target name="build.core" depends="init">
+    <javac srcdir="${src.java.dir}"
+	   destdir="${src.classes.dir}" debug="true">
+      <classpath refid="compile.classpath"/>
+    </javac>
+    
+    <copy todir="${src.classes.dir}">
+      <fileset dir="${src.conf.dir}"
+		includes="*.properties"/>    
+   </copy>
+
+  </target>
+	
+  <target name="jar" depends="build.core">
+  	<jar destfile="${jar.dest}/${jar.filename}" basedir="${src.classes.dir}">
+  		<manifest>
+  			<attribute name="Version" value="${ver}"/>
+  		</manifest>
+  		<exclude name="**/*.properties"/>
+  	</jar>
+  </target>
+	
+  <target name="build.test" depends="build.core">
+    <javac srcdir="${test.java.dir}"
+	   destdir="${test.classes.dir}" debug="true">
+      <classpath refid="test.compile.classpath"/>
+    </javac>
+  </target>
+	
+  <target name="unit-test" depends="build.test">
+  	<junit printsummary="yes" fork="yes">
+  		<classpath refid="test.compile.classpath" />
+  		<test name="com.hs.bws.AllApplicationTests" haltonfailure="no" todir="${junit.reports.dir}">
+	  		<formatter type="xml"/>
+  		</test>
+  	</junit>
+  </target>
+	
+  <target name="deploy" depends="build, unit-test">
+	<copy file="${jar.dest}/${jar.filename}" todir="${deploy.dir}/lib" overwrite="true"/>
+	<copy todir="${deploy.dir}/lib" overwrite="true">
+  		<fileset dir="${lib.dir}">
+  			<include name="*.jar"/>
+  		</fileset>
+  	</copy>
+	<copy todir="${deploy.dir}/cfg" overwrite="true">
+  		<fileset dir="${src.conf.dir}">
+  			<include name="*.properties"/>
+  			<include name="*.dll"/>
+  			<include name="*.jrxml"/>
+  		</fileset>
+  	</copy>
+	<copy todir="${deploy.dir}" overwrite="true">
+  		<fileset dir="${src.winbat.dir}">
+  			<include name="*.bat"/>
+  		</fileset>
+  	</copy>
+  	
+  	<!-- This is where we will replace the values of specific properties in the property file-->
+  	<replace file="${deploy.dir}/cfg/bws.properties" token="invoiceReport.sendToPrinter=N" value="invoiceReport.sendToPrinter=Y"/>
+  	<replace file="${deploy.dir}/cfg/bws.properties" token="C:\\sandbox\\java\\bwsBillingSystem\\src\\conf\\invoice.jrxml" 
+  		value="C://Program Files//BWS Billing//cfg//invoice.jrxml"/>
+  </target>
+
+  <!-- ================================================================= -->
+  <!-- Remove all generated (compiled) class files.                      -->
+  <!-- ================================================================= -->
+  <target name="clean">
+    <delete dir="${src.classes.dir}" />
+    <delete dir="${test.classes.dir}" />
+  	<delete dir="${jar.dest}"/>  
+  	<delete dir="${junit.reports.dir}"/>
+  </target>
+
+</project>

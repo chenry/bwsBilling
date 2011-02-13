@@ -1,2 +1,12 @@
 classes
 log
+.settings/
+.project
+.classpath
+classes.src
+classes.test
+dist
+junit-reports
+tmp.dat
+*log*
+*.1

@@ -1,0 +1,13 @@
+*create the test data
+map out the database - done
+map out the object collection
+set up CVSWeb
+get mysql install script working - done
+database update script for updating the database structure
+make all the indicies start at 5500
+make a one time only script for database changes
+
+
+Research
+Windows free uml tool
+Linux Project Managment suits

@@ -1,0 +1,19 @@
+for branch 1_1
+
+- done - find by last name - 
+-sort table by column headings on click
+-delete customer with closed account after 6 years
+-ability to reopen closed accounts.
+
+Database Stuff
+- done - add credit_bal to customer 
+- done - add bill_date to invoice 
+- done - customer ID needs to start at 5500
+- done - create a script to run the above
+
+2/3/2007
+- 6312 Account is closed.  This is the reason why they have not been billed....
+- 5618 Updating Cust Information - was not allowing the update of an empty string.  This has been fixed
+- 6378 Customer would not close - because of the single quote in the name.  This has been fixed.
+
+ 
