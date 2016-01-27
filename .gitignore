@@ -10,3 +10,4 @@ junit-reports
 tmp.dat
 *log*
 *.1
+backup_files
